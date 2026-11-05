@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Clock</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&display=swap"
+    rel="stylesheet"
+  >
+
+  <script src="history.min.js" defer></script>
+
+  <style>
+    :root {
+      color-scheme: light dark;
+      --background: #f7f7f5;
+      --foreground: #20201e;
+      --muted: #666660;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #171715;
+        --foreground: #f1f1ed;
+        --muted: #a3a39d;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: clamp(16px, 4vw, 24px);
+      background: var(--background);
+      color: var(--foreground);
+      font-family:
+        "DM Sans",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    }
+
+    main {
+      width: 100%;
+      min-width: 0;
+      text-align: center;
+    }
+
+    #time {
+      display: block;
+      white-space: nowrap;
+      font-size: clamp(1.75rem, 15vw, 8rem);
+      font-weight: 400;
+      letter-spacing: -.075em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #date {
+      display: block;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .noscript {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <time id="time">--:--:--</time>
+    <time id="date"></time>
+
+    <noscript>
+      <p class="noscript">
+        JavaScript must be enabled to display the clock.
+      </p>
+    </noscript>
+  </main>
+
+  <script>
+    "use strict";
+
+    const time = document.getElementById("time");
+    const date = document.getElementById("date");
+
+    const timeFormat = new Intl.DateTimeFormat("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23"
+    });
+
+    const dateFormat = new Intl.DateTimeFormat("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+    let lastDateKey = "";
+    let timerId = null;
+
+    function clearClockTimer() {
+      if (timerId !== null) {
+        window.clearTimeout(timerId);
+        timerId = null;
+      }
+    }
+
+    function updateClock() {
+      clearClockTimer();
+
+      if (document.hidden) return;
+
+      const nowMs = Date.now();
+      const now = new Date(nowMs);
+
+      time.dateTime = now.toISOString();
+      time.textContent = timeFormat.format(now);
+
+      const dateKey = [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, "0"),
+        String(now.getDate()).padStart(2, "0")
+      ].join("-");
+
+      if (dateKey !== lastDateKey) {
+        date.dateTime = dateKey;
+        date.textContent = dateFormat.format(now);
+        lastDateKey = dateKey;
+      }
+
+      const nextSecond =
+        (Math.floor(nowMs / 1000) + 1) * 1000;
+
+      const delay = Math.max(
+        0,
+        nextSecond - Date.now()
+      );
+
+      if (!document.hidden) {
+        timerId = window.setTimeout(updateClock, delay);
+      }
+    }
+
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        clearClockTimer();
+
+        if (!document.hidden) {
+          updateClock();
+        }
+      }
+    );
+
+    window.addEventListener("pagehide", clearClockTimer);
+
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted && !document.hidden) {
+        updateClock();
+      }
+    });
+
+    updateClock();
+  </script>
+</body>
+</html>
