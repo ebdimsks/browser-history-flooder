@@ -1,10 +1,8 @@
-(function() {
+(() => {
   let counter = Number(location.hash.slice(1)) || 0;
+  const intervalMs = 25;
 
-  function tick() {
-    counter = counter + 1;
-    location.hash = counter;
-  }
-
-  setInterval(tick, 25);
+  setInterval(() => {
+    history.pushState(null, "", `#${++counter}`);
+  }, intervalMs);
 })();
