@@ -39,7 +39,6 @@ The default interval of 25 milliseconds corresponds to a nominal update frequenc
 ├── history.js
 ├── history.min.js
 └── examples/
-    └── clock.html
 ```
 
 - `history.js` — Readable JavaScript source
